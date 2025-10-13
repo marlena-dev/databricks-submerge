@@ -1,7 +1,7 @@
-# 📚 AULA 01: O que é Databricks e Fundamentos do Lakehouse
+# 📚 AULA 01: Fundamentos do Lakehouse na Prática — Ingestão, Agendamento e DLT
 
 ## 🎯 Objetivo da Aula
-Estabelecer a base conceitual e prática da plataforma Databricks, preparando o ambiente para desenvolvimento de pipelines de dados modernos.
+Construir, agendar e operacionalizar ingestões de dados a partir de 2 fontes de APIs (Bitcoin e commodities: ouro, prata e petróleo) e 1 fonte relacional (Supabase), simulando um data lake com camadas raw→bronze usando DLT.
 
 ---
 
@@ -15,96 +15,99 @@ Estabelecer a base conceitual e prática da plataforma Databricks, preparando o 
 - [ ] Conhecimentos básicos de SQL (recomendado)
 - [ ] Conhecimentos básicos de Python (opcional)
 - [ ] Navegador web atualizado
+- [ ] Conta no Supabase (para o banco relacional)
 
 ---
 
 ## 🗺️ Roteiro da Aula
 
-### **Parte 1: Introdução ao Databricks (30 min)**
+### Parte 1: Introdução ao Databricks (20-30 min)
 
 #### 1.1 O que é Databricks?
-- [ ] **Conceito de Lakehouse**: Entendendo a evolução dos data warehouses
-- [ ] **Databricks como plataforma unificada**: Analytics + AI + Data Engineering
-- [ ] **Vantagens competitivas**: Performance, escalabilidade, governança
-- [ ] **Casos de uso reais**: Empresas que usam Databricks
+- [ ] Conceito de Lakehouse e evolução dos data warehouses
+- [ ] Plataforma unificada: Analytics + AI + Data Engineering
+- [ ] Benefícios: performance, escalabilidade, governança
 
 #### 1.2 Arquitetura Lakehouse
-- [ ] **Comparação**: Data Warehouse vs Data Lake vs Lakehouse
-- [ ] **Componentes principais**: Spark, Delta Lake, Unity Catalog
-- [ ] **Benefícios da arquitetura**: ACID, versionamento, governança
+- [ ] Data Warehouse vs Data Lake vs Lakehouse
+- [ ] Componentes: Spark, Delta Lake, Unity Catalog
+- [ ] Benefícios: ACID, versionamento, governança
 
-### **Parte 2: Configuração do Ambiente (45 min)**
+### Parte 2: Configuração do Ambiente (30-45 min)
 
 #### 2.1 Criando Conta no Databricks
-- [ ] **Acesso ao Community Edition**: [community.cloud.databricks.com](https://community.cloud.databricks.com)
-- [ ] **Processo de registro**: Email, verificação, configuração inicial
-- [ ] **Navegação na interface**: Workspace, clusters, notebooks
-- [ ] **Configurações básicas**: Perfil, preferências, idioma
+- [ ] Acesso ao Community Edition
+- [ ] Registro e configuração inicial
+- [ ] Navegação: Workspace, clusters, notebooks
 
 #### 2.2 Integração com GitHub
-- [ ] **Configuração do Git no Databricks**: Settings → Git Integration
-- [ ] **Conectando repositório**: URL do repo, autenticação
-- [ ] **Sincronização inicial**: Clone, pull, push
-- [ ] **Configuração de branch**: main, desenvolvimento
+- [ ] Configurar Git Integration
+- [ ] Conectar repositório e sincronizar (clone/pull/push)
+- [ ] Fluxo de branches (main/desenvolvimento)
 
-### **Parte 3: Unity Catalog e Governança (60 min)**
+#### 2.3 Organização do projeto neste repositório
+- [ ] `src/ingestao/`: notebooks base de ingestão (bitcoin, yfinance/commodities)
+- [ ] `src/sql/`: scripts SQL (tabelas e cargas simuladas)
+- [ ] `src/bronze/`: notebooks DLT para camadas bronze
+- [ ] `dlt_bronze_bitcoin_pipeline-(1)/transformations/`: SQLs DLT
 
-#### 3.1 Unity Catalog - Visão Geral
-- [ ] **O que é Unity Catalog**: Governança unificada de dados
-- [ ] **Conceitos fundamentais**: Catalogs, Schemas, Tables
-- [ ] **Hierarquia de objetos**: Organização lógica dos dados
-- [ ] **Benefícios**: Segurança, auditoria, descoberta
+---
 
-#### 3.2 Configurando o Metastore
-- [ ] **Criação do Metastore**: Configuração inicial
-- [ ] **Definição de Catalogs**: Estrutura organizacional
-- [ ] **Criação de Schemas**: Agrupamento lógico
-- [ ] **Configuração de permissões**: Acesso e segurança
+## 💾 Parte 3: Ingestão via APIs (40-60 min)
 
-#### 3.3 Primeiros Objetos
-- [ ] **Criando tabelas de exemplo**: Dados de demonstração
-- [ ] **Explorando metadados**: Schema, estatísticas, histórico
-- [ ] **Testando consultas**: SQL básico no Databricks
+#### 3.1 Fontes e escopo
+- [ ] Bitcoin: preço/volume
+- [ ] Commodities: ouro, prata e petróleo (yfinance)
 
-### **Parte 4: Apache Spark e Delta Lake (45 min)**
+#### 3.2 Implementação (usando notebooks como base para scripts)
+- [ ] Revisar `src/ingestao/ingest_bitcoin_to_volume.ipynb`
+- [ ] Revisar `src/ingestao/ingest_yfinance_to_volume.ipynb`
+- [ ] Converter para scripts Python executáveis e salvar em `src/ingestao/`
+- [ ] Definir diretórios de saída para camada raw (simulando data lake)
 
-#### 4.1 Fundamentos do Apache Spark
-- [ ] **Arquitetura do Spark**: Driver, Executors, Cluster
-- [ ] **Conceitos de RDD**: Resilient Distributed Datasets
-- [ ] **DataFrames e Datasets**: APIs de alto nível
-- [ ] **Lazy Evaluation**: Otimização de execução
+Exemplo de pontos-chave nos scripts:
+- Extração da API (requests/yfinance)
+- Normalização de colunas e carimbo de tempo (ingestion_time)
+- Escrita em formato parquet/CSV na área raw
 
-#### 4.2 Delta Lake - O Coração do Lakehouse
-- [ ] **O que é Delta Lake**: ACID transactions em data lakes
-- [ ] **Versionamento de dados**: Time travel, histórico
-- [ ] **Schema evolution**: Evolução de esquemas
-- [ ] **Upsert operations**: MERGE, UPDATE, DELETE
+#### 3.3 Agendamento
+- [ ] Agendar 2 scripts (bitcoin e commodities)
+- [ ] Frequência: a cada 10 minutos (cron local, crontab, ou Databricks Jobs)
+- [ ] Log mínimo: timestamp da execução e quantidade de registros gravados
 
-#### 4.3 Primeiro Notebook
-- [ ] **Criando notebook**: Interface, células, execução
-- [ ] **Código Python básico**: Spark SQL, DataFrames
-- [ ] **Código SQL**: Consultas diretas
-- [ ] **Visualizações**: Gráficos e dashboards
+---
 
-### **Parte 5: Hands-on Prático (60 min)**
+## 🗄️ Parte 4: Ingestão de Banco SQL (Supabase) (30-45 min)
 
-#### 5.1 Exercício 1: Configuração Completa
-- [ ] **Setup do ambiente**: Cluster, bibliotecas, configurações
-- [ ] **Criação de dados de exemplo**: Dataset de vendas
-- [ ] **Primeira tabela Delta**: Criação e inserção
-- [ ] **Consultas básicas**: SELECT, WHERE, GROUP BY
+#### 4.1 Criação do Banco
+- [ ] Criar projeto no Supabase (Postgres habilitado)
+- [ ] Executar `src/sql/create_table.sql`
+- [ ] Popular base inicial com `src/sql/seed_customer.sql`
 
-#### 5.2 Exercício 2: Explorando Funcionalidades
-- [ ] **Time Travel**: Visualizando versões anteriores
-- [ ] **Schema Evolution**: Adicionando colunas
-- [ ] **VACUUM**: Limpeza de arquivos antigos
-- [ ] **OPTIMIZE**: Compactação de dados
+#### 4.2 Cargas e rotinas de atualização (simulação de transações)
+- [ ] Executar `src/sql/cron_sales_btc.sql` (transações BTC)
+- [ ] Executar `src/sql/cron_sales_commodities.sql` (transações commodities)
+- [ ] Agendar 2 rotinas a cada 10 minutos
 
-#### 5.3 Exercício 3: Integração GitHub
-- [ ] **Commit de código**: Salvando notebooks
-- [ ] **Sincronização**: Pull/Push com repositório
-- [ ] **Versionamento**: Controle de versões
-- [ ] **Colaboração**: Trabalho em equipe
+Observação: manter credenciais seguras e variáveis de ambiente fora do código.
+
+---
+
+## 🪄 Parte 5: DLT — Raw para Bronze (30-45 min)
+
+#### 5.1 Visão Geral do DLT
+- [ ] O que é Delta Live Tables e quando usar
+- [ ] Boas práticas de camadas raw→bronze
+
+#### 5.2 Implementação
+- [ ] Utilizar `src/bronze/dlt_bronze_bitcoin.ipynb` (quando aplicável)
+- [ ] Referenciar SQLs em `dlt_bronze_bitcoin_pipeline-(1)/transformations/`
+- [ ] Criar tabelas bronze a partir dos arquivos raw (bitcoin e commodities)
+
+#### 5.3 Execução e validação
+- [ ] Rodar pipeline DLT
+- [ ] Verificar lineage e qualidade básica
+- [ ] Consultar tabelas bronze
 
 ---
 
@@ -112,15 +115,12 @@ Estabelecer a base conceitual e prática da plataforma Databricks, preparando o 
 
 Ao final desta aula, você será capaz de:
 
-- [ ] **Explicar** o conceito de Lakehouse e suas vantagens
-- [ ] **Configurar** uma conta Databricks e integrar com GitHub
-- [ ] **Navegar** pela interface do Databricks com confiança
-- [ ] **Entender** a arquitetura do Unity Catalog
-- [ ] **Criar** e gerenciar objetos no Unity Catalog
-- [ ] **Compreender** os fundamentos do Apache Spark
-- [ ] **Trabalhar** com Delta Lake e suas funcionalidades
-- [ ] **Desenvolver** notebooks básicos no Databricks
-- [ ] **Aplicar** boas práticas de governança de dados
+- [ ] Implementar ingestões a partir de APIs (bitcoin e commodities)
+- [ ] Agendar execuções recorrentes (cron/Jobs) a cada 10 minutos
+- [ ] Configurar um banco relacional no Supabase e executar cargas SQL
+- [ ] Organizar dados em camadas (raw e bronze) no Lakehouse
+- [ ] Operacionalizar um pipeline DLT do raw para bronze
+- [ ] Auditar e validar dados ingeridos e transformados
 
 ---
 
@@ -144,25 +144,19 @@ Ao final desta aula, você será capaz de:
 
 ## ✅ Checklist de Conclusão
 
-- [ ] Conta Databricks criada e configurada
-- [ ] Integração com GitHub funcionando
-- [ ] Unity Catalog configurado com catalogs e schemas
-- [ ] Primeiro notebook criado e executado
-- [ ] Tabela Delta criada com dados de exemplo
-- [ ] Consultas SQL básicas executadas
-- [ ] Código versionado no GitHub
-- [ ] Conceitos fundamentais compreendidos
+- [ ] Scripts de ingestão (bitcoin e commodities) criados e funcionando
+- [ ] Agendamentos configurados para rodar a cada 10 minutos
+- [ ] Supabase criado, tabelas e seeds aplicados
+- [ ] Rotinas SQL de transações rodando no Supabase
+- [ ] Dados raw escritos no data lake simulado
+- [ ] Pipeline DLT executado e tabelas bronze criadas
+- [ ] Consultas de validação executadas nas tabelas bronze
 
 ---
 
 ## 🚀 Próximos Passos
 
 **Aula 2:** Modelagem, KPIs e Governança
-- Implementação da arquitetura Medallion
-- Ingestão de dados com CDC
-- Configuração de camadas Bronze
-- Estabelecimento de governança avançada
-
----
-
-> 💡 **Dica:** Mantenha este roteiro como referência durante toda a imersão. Os conceitos aprendidos aqui serão fundamentais para as próximas aulas!
+- Modelagem lógica/física das tabelas silver
+- KPIs iniciais e agregações
+- Qualidade de dados (expectations) e governança
