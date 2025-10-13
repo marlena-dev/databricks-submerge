@@ -1,199 +1,158 @@
-# Projeto API com Requests
+# 🚀 Imersão Databricks — Jornada de Dados
 
-Este projeto demonstra como fazer requisições para APIs usando a biblioteca `requests` do Python e imprimir os resultados.
-
-## 📋 Descrição
-
-O projeto consiste em scripts Python que fazem chamadas para APIs externas e exibem os dados retornados no terminal usando o comando `print()`.
-
-## 🚀 Funcionalidades
-
-- Fazer requisições HTTP para APIs
-- Imprimir resultados formatados no terminal
-- Tratamento básico de erros
-- Exemplos de diferentes tipos de APIs
-
-## 📦 Pré-requisitos
-
-- Python 3.6 ou superior
-- Biblioteca `requests`
-
-## 🛠️ Instalação
-
-1. Clone este repositório:
-```bash
-git clone <url-do-repositorio>
-cd imersao_databricks
-```
-
-2. Instale as dependências:
-```bash
-pip install requests
-```
-
-## 📖 Como Usar
-
-### Exemplo Básico
-
-```python
-import requests
-
-# Fazer uma requisição GET
-response = requests.get('https://api.exemplo.com/dados')
-
-# Verificar se a requisição foi bem-sucedida
-if response.status_code == 200:
-    dados = response.json()
-    print("Dados recebidos:")
-    print(dados)
-else:
-    print(f"Erro na requisição: {response.status_code}")
-```
-
-### Exemplo com API JSONPlaceholder
-
-```python
-import requests
-
-# API de exemplo para testes
-url = 'https://jsonplaceholder.typicode.com/posts/1'
-
-try:
-    response = requests.get(url)
-    response.raise_for_status()  # Levanta exceção para códigos de erro HTTP
-    
-    post = response.json()
-    print("=== POST RECEBIDO ===")
-    print(f"ID: {post['id']}")
-    print(f"Título: {post['title']}")
-    print(f"Conteúdo: {post['body']}")
-    
-except requests.exceptions.RequestException as e:
-    print(f"Erro na requisição: {e}")
-```
-
-## 📁 Estrutura do Projeto
-
-```
-imersao_databricks/
-├── README.md
-├── requirements.txt
-├── main.py
-└── examples/
-    ├── basic_api.py
-    ├── json_placeholder.py
-    └── weather_api.py
-```
-
-## 🔧 Configuração
-
-1. Crie um arquivo `requirements.txt`:
-```
-requests==2.31.0
-```
-
-2. Para APIs que requerem autenticação, configure as variáveis de ambiente:
-```bash
-export API_KEY="sua_chave_aqui"
-```
-
-## 📝 Exemplos de APIs
-
-### 1. API de CEP (ViaCEP)
-```python
-import requests
-
-cep = "01310-100"
-url = f"https://viacep.com.br/ws/{cep}/json/"
-
-response = requests.get(url)
-dados = response.json()
-
-print("=== DADOS DO CEP ===")
-print(f"CEP: {dados['cep']}")
-print(f"Logradouro: {dados['logradouro']}")
-print(f"Bairro: {dados['bairro']}")
-print(f"Cidade: {dados['localidade']}")
-print(f"Estado: {dados['uf']}")
-```
-
-### 2. API do GitHub
-```python
-import requests
-
-username = "octocat"
-url = f"https://api.github.com/users/{username}"
-
-response = requests.get(url)
-usuario = response.json()
-
-print("=== DADOS DO USUÁRIO GITHUB ===")
-print(f"Nome: {usuario['name']}")
-print(f"Login: {usuario['login']}")
-print(f"Repositórios públicos: {usuario['public_repos']}")
-print(f"Seguidores: {usuario['followers']}")
-```
-
-## 🐛 Tratamento de Erros
-
-```python
-import requests
-
-def fazer_requisicao(url):
-    try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.Timeout:
-        print("Erro: Timeout na requisição")
-    except requests.exceptions.ConnectionError:
-        print("Erro: Problema de conexão")
-    except requests.exceptions.HTTPError as e:
-        print(f"Erro HTTP: {e}")
-    except requests.exceptions.RequestException as e:
-        print(f"Erro na requisição: {e}")
-    return None
-
-# Uso
-dados = fazer_requisicao("https://api.exemplo.com/dados")
-if dados:
-    print(dados)
-```
-
-## 🚀 Executando o Projeto
-
-```bash
-# Executar o script principal
-python main.py
-
-# Executar exemplos específicos
-python examples/basic_api.py
-python examples/json_placeholder.py
-```
-
-## 📚 Recursos Úteis
-
-- [Documentação do Requests](https://docs.python-requests.org/)
-- [HTTP Status Codes](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status)
-- [JSONPlaceholder API](https://jsonplaceholder.typicode.com/)
-- [ViaCEP API](https://viacep.com.br/)
-
-## 🤝 Contribuição
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
-4. Push para a branch (`git push origin feature/nova-feature`)
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
-
-## 👨‍💻 Autor
-
-Luciano Galvão
+Bem-vindo à **Imersão Databricks**, um treinamento intensivo de **3 dias** criado pela **Jornada de Dados** para te levar do zero à construção de pipelines completos na plataforma Databricks, dominando **Spark, Delta Lake e a arquitetura Lakehouse**.
 
 ---
 
-**Nota**: Este projeto é para fins educacionais e demonstração. Sempre respeite os termos de uso das APIs que você utilizar.
+## 🎯 Objetivo
+
+Capacitar você a construir pipelines de dados modernos, aplicando boas práticas de engenharia de dados em um ambiente real de nuvem, utilizando **Databricks Free Edition** e conectando com **GitHub** para versionamento e governança.
+
+Durante a imersão, você vai:
+
+- Criar sua conta gratuita no Databricks e integrar com o GitHub.  
+- Entender a arquitetura **Bronze, Silver e Gold** dentro do Unity Catalog.  
+- Ingerir dados via **CDC (Change Data Capture)** para o Lakehouse.  
+- Aplicar transformações e criar camadas analíticas.  
+- Automatizar e visualizar seus pipelines no Databricks.
+
+---
+
+## 🗓️ Estrutura do Treinamento
+
+### **Aula 1: O que é Databricks e Fundamentos do Lakehouse**
+**Objetivo Principal:** Estabelecer a base conceitual e prática da plataforma Databricks
+
+**Objetivos Específicos:**
+- Criar conta gratuita no Databricks Community Edition
+- Integrar o ambiente com GitHub para versionamento
+- Entender a arquitetura **Lakehouse** e seus benefícios
+- Configurar o **Unity Catalog** e **Metastore**
+- Compreender os fundamentos do **Apache Spark** e **Delta Lake**
+- Explorar a interface do Databricks e suas funcionalidades básicas
+
+**Principais Tópicos:** Conta Free, GitHub, Unity Catalog, Metastore, Fundamentos do Spark
+
+---
+
+### **Aula 2: Modelagem, KPIs e Governança**
+**Objetivo Principal:** Aplicar a arquitetura Medallion (Bronze, Silver, Gold) e implementar governança de dados
+
+**Objetivos Específicos:**
+- Implementar **Change Data Capture (CDC)** para ingestão de dados
+- Configurar camadas **Bronze** (dados brutos) no Lakehouse
+- Aplicar transformações usando **Auto Loader** e **S3**
+- Entender e implementar a **Medallion Architecture**
+- Estabelecer **governança de dados** através do Unity Catalog
+- Criar **KPIs** e métricas de qualidade dos dados
+- Aplicar boas práticas de **modelagem de dados**
+
+**Principais Tópicos:** CDC, S3, Delta Lake, Auto Loader, Medallion Architecture, Governança
+
+---
+
+### **Aula 3: Automação, Agentes de IA e Portfólio**
+**Objetivo Principal:** Automatizar pipelines e criar soluções escaláveis com IA
+
+**Objetivos Específicos:**
+- Desenvolver camadas **Silver** (dados refinados) e **Gold** (dados curados)
+- Implementar **ETL/ELT** automatizados no Databricks
+- Utilizar **SQL no Databricks** para transformações avançadas
+- Criar **visualizações** e dashboards
+- Explorar **agentes de IA** e automação inteligente
+- Implementar **pipelines reprodutíveis e escaláveis**
+- Construir um **portfólio prático** com projetos reais
+- Aplicar **boas práticas de engenharia de dados**
+
+**Principais Tópicos:** ETL, SQL no Databricks, Visualização, Governança, Agentes de IA, Automação
+
+---
+
+## 🧱 Arquitetura de Referência
+
+O projeto segue o padrão de camadas **Medallion Architecture**:
+
+```text
+Sistema de Origem  →  Bronze (Raw)  →  Silver (Refined)  →  Gold (Curated)
+                              |
+                           Unity Catalog
+                              |
+                        Governança & Acesso
+````
+
+---
+
+## 👥 Público-Alvo
+
+Profissionais e estudantes de **dados, engenharia, BI e analytics** que desejam aprender na prática como criar pipelines reais e governados com **Spark e Databricks**.
+
+---
+
+## ⚙️ Pré-Requisitos
+
+* Conta gratuita no [Databricks Community Edition](https://community.cloud.databricks.com)
+* Conta no [GitHub](https://github.com)
+* Conhecimentos básicos de SQL e Python (opcional)
+
+### 📺 Tutorial: Como Criar sua Conta no Databricks
+
+**Aprenda a criar sua conta no Databricks assistindo este vídeo tutorial:**
+
+🎥 **[Como Criar Conta no Databricks - Tutorial Completo](https://youtu.be/KJv1bZ6-gSY)**
+
+Este vídeo te guiará passo a passo para:
+- Criar sua conta gratuita no Databricks Community Edition
+- Configurar seu perfil e preferências iniciais
+- Navegar pela interface do Databricks
+- Configurar seu primeiro workspace
+
+---
+
+## 🧠 Tecnologias Utilizadas
+
+* **Databricks**
+* **Apache Spark**
+* **Delta Lake**
+* **Unity Catalog**
+* **Amazon S3 (simulado)**
+* **Python / SQL**
+* **Git e GitHub**
+
+---
+
+## 🏁 Resultados Esperados
+
+Ao final da imersão, você será capaz de:
+
+* Configurar um ambiente Databricks completo.
+* Ingerir e transformar dados de forma incremental.
+* Aplicar boas práticas de governança e versionamento.
+* Entender a lógica da arquitetura **Lakehouse**.
+* Criar pipelines reprodutíveis e escaláveis.
+
+---
+
+## 📚 Créditos
+
+Desenvolvido por **Luciano Vasconcelos** e o time da **Jornada de Dados**.
+Mais informações em: [https://jornadadedados.com.br](https://jornadadedados.com.br)
+
+---
+
+## 💬 Contato
+
+📩 **E-mail:** [contato@jornadadedados.com.br](mailto:contato@jornadadedados.com.br)
+💼 **LinkedIn:** [Luciano Vasconcelos](https://linkedin.com/in/lucianovasconcelos)
+📺 **YouTube:** [Jornada de Dados](https://youtube.com/@jornadadedados)
+
+---
+
+> “A engenharia de dados moderna começa quando você entende que o dado é o seu produto.”
+> — Jornada de Dados
+
+```
+
+---
+
+Quer que eu adicione uma **seção de instruções práticas** (por exemplo, comandos para configurar o repositório, clonar, conectar ao Databricks e rodar os notebooks)? Isso deixaria o README ainda mais útil para os alunos.
+```
