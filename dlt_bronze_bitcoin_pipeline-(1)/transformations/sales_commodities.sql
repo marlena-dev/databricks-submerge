@@ -1,7 +1,8 @@
-CREATE OR REFRESH STREAMING LIVE TABLE sales_commodities
+CREATE OR REFRESH STREAMING LIVE TABLE bronze_yfinance
 TBLPROPERTIES ("quality" = "bronze")
 AS
-SELECT
-  *,
-  current_timestamp() AS ingestion_ts_utc
-FROM STREAM(lakehouse.postgres_public.sales_commodities);
+SELECT *
+FROM cloud_files(
+  '/Volumes/lakehouse/raw_public/raw_yfinance/commodities/latest_prices',
+  'json'
+);
