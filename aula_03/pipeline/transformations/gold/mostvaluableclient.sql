@@ -1,7 +1,7 @@
 -- Gold Layer: mostvaluableclient
 -- Agregação por cliente: total, média, frequência, ticket médio e ranking
 
-CREATE OR REFRESH MATERIALIZED VIEW gold.mostvaluableclient(
+CREATE OR REFRESH STREAMING TABLE gold.mostvaluableclient(
   CONSTRAINT transacoes_minimas EXPECT (total_transacoes >= 1) ON VIOLATION DROP ROW,
   CONSTRAINT valor_total_positive EXPECT (valor_total > 0) ON VIOLATION DROP ROW,
   CONSTRAINT ticket_medio_positive EXPECT (ticket_medio > 0) ON VIOLATION DROP ROW,

@@ -36,11 +36,13 @@ Todas as tabelas implementam regras de qualidade usando a sintaxe oficial `CONST
 
 ## Streaming e Incremental Processing
 
-Todas as tabelas Silver e Gold utilizam `STREAM()` para garantir processamento incremental:
+Todas as tabelas Silver e Gold utilizam `STREAMING TABLE` e `STREAM()` para garantir processamento incremental:
 
+- **Tipo de Tabela**: `CREATE OR REFRESH STREAMING TABLE` (não MATERIALIZED VIEW)
 - **Bronze → Silver**: `FROM STREAM(bronze.tabela)`
 - **Silver → Gold**: `FROM STREAM(silver.tabela)`
 - **Evita erro**: "Cannot create a streaming table append once flow from a batch query"
+- **Evita erro**: "_LEGACY_ERROR_TEMP_125_MATERIALIZED_VIEW_WITH_STREAMING_SOURCE"
 - **Garante**: Ingestão incremental e comportamento correto do pipeline
 
 ## Configuração
