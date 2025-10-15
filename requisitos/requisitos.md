@@ -83,7 +83,7 @@ Mantive o destaque das **4 tabelas Silver**, as **instruções de ingestão via 
 | **fact_transaction_assets** | União de transações BTC e Commodities, normalização de `asset_symbol` e `quantidade`. | `quantidade > 0`, `tipo_operacao` válido, `data_hora` não nula |
 | **fact_quotation_assets** | União de cotações BTC e yFinance; padronização de ativo, preço e moeda. | `preco` convertido para DECIMAL, `preco > 0`, `timestamp` válido |
 | **dim_clientes** | Cópia anonimizada da base de clientes; validação de categorias. | `documento` anonimizado via SHA2, `segmento/pais/estado` válidos, `customer_id` único |
-| **fact_transaction_revenue** | Junção entre transações e cotações, cálculo de valor e receita de taxa (camada Silver de enriquecimento antes da Gold). | `gross_value = quantidade × preço`, `fee_revenue = gross_value × 0.25%`, cotação válida |
+| **fact_transaction_revenue** | Junção entre transações e cotações por tempo igual, cálculo de valor e receita de taxa (camada Silver de enriquecimento antes da Gold). | `gross_value = quantidade × preço`, `fee_revenue = gross_value × 0.25%`, cotação válida |
 
 ---
 
@@ -120,7 +120,7 @@ Mantive o destaque das **4 tabelas Silver**, as **instruções de ingestão via 
 - **Ação:** campos nulos ou fora de domínio enviados para `dq_quarantine.dim_clientes`
 
 ### 5.4 fact_transaction_revenue
-- Cada transação deve possuir cotação válida ≤ `ts`  
+- Cada transação deve possuir cotação válida com tempo igual (`horario_coleta = data_hora`)  
 - `gross_value > 0`  
 - `fee_revenue > 0`  
 - `customer_sk` não nulo (join válido com `dim_clientes`)  
@@ -171,7 +171,7 @@ Esses dados precisam ser lidos utilizando a função `cloud_files()` para ingest
 2. **Unir as cotações:** `quotation_btc` + `quotation_yfinance` → `fact_quotation_assets`  
 3. **Unir as transações:** `transacation_btc` + `transaction_commodities` → `fact_transaction_assets`  
 4. **Data Quality e anonimização:** sobre `customers` → `dim_clientes`  
-5. **Join entre transações e cotações:** → `fact_transaction_revenue` (enriquecimento Silver)
+5. **Join entre transações e cotações por tempo igual:** → `fact_transaction_revenue` (enriquecimento Silver)
 6. **Agregação Gold:** `fact_transaction_revenue` → `mostvaluableclient` (métricas de negócio)
 
 ### 🧠 Exemplo de comando para ingestão via DLT

@@ -17,7 +17,7 @@ Este pipeline implementa a segmentação de clientes conforme especificado no do
 - **fact_transaction_assets.sql**: União de transações BTC e commodities com normalização
 - **fact_quotation_assets.sql**: União de cotações BTC e yFinance com padronização
 - **dim_clientes.sql**: Dimensão de clientes com anonimização (SHA2)
-- **fact_transaction_revenue.sql**: Junção entre transações e cotações, cálculo de valor e receita de taxa
+- **fact_transaction_revenue.sql**: Junção entre transações e cotações por tempo igual, cálculo de valor e receita de taxa
 
 ### Gold Layer
 
