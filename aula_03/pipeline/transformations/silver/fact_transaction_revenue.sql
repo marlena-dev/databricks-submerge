@@ -9,6 +9,7 @@ CREATE OR REFRESH STREAMING TABLE silver.fact_transaction_revenue(
 ) AS SELECT 
   t.transaction_id,
   t.data_hora,
+  t.data_hora_aproximada,
   t.asset_symbol,
   t.quantidade,
   t.tipo_operacao,
@@ -19,6 +20,7 @@ CREATE OR REFRESH STREAMING TABLE silver.fact_transaction_revenue(
   c.customer_id as customer_sk,
   q.preco as preco_cotacao,
   q.horario_coleta as timestamp_cotacao,
+  q.data_hora_aproximada as cotacao_hora_aproximada,
   -- Cálculo do valor bruto da transação
   (t.quantidade * q.preco) as gross_value,
   -- Cálculo da receita de taxa (0.25%)
@@ -28,4 +30,4 @@ CREATE OR REFRESH STREAMING TABLE silver.fact_transaction_revenue(
 FROM STREAM(silver.fact_transaction_assets) t
 INNER JOIN STREAM(silver.dim_clientes) c ON t.cliente_id = c.customer_id
 INNER JOIN STREAM(silver.fact_quotation_assets) q ON t.asset_symbol = q.ativo 
-  AND q.horario_coleta = t.data_hora
+  AND q.data_hora_aproximada = t.data_hora_aproximada

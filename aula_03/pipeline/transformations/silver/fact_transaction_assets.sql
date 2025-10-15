@@ -9,6 +9,7 @@ CREATE OR REFRESH STREAMING TABLE silver.fact_transaction_assets(
 ) AS SELECT 
   transaction_id,
   data_hora,
+  date_trunc('hour', data_hora) as data_hora_aproximada,
   CASE 
     WHEN ativo IS NOT NULL THEN ativo
     WHEN commodity_code IS NOT NULL THEN commodity_code
