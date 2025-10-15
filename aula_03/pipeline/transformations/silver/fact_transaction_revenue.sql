@@ -23,6 +23,12 @@ CREATE OR REFRESH STREAMING TABLE silver.fact_transaction_revenue(
   q.data_hora_aproximada as cotacao_hora_aproximada,
   -- Cálculo do valor bruto da transação
   (t.quantidade * q.preco) as gross_value,
+  -- Cálculo do valor bruto com sinal (positivo para VENDA, negativo para COMPRA)
+  CASE 
+    WHEN t.tipo_operacao = 'VENDA' THEN (t.quantidade * q.preco)
+    WHEN t.tipo_operacao = 'COMPRA' THEN -(t.quantidade * q.preco)
+    ELSE 0
+  END as gross_value_sinal,
   -- Cálculo da receita de taxa (0.25%)
   (t.quantidade * q.preco * 0.0025) as fee_revenue,
   t.processed_at,

@@ -16,6 +16,7 @@ CREATE OR REFRESH STREAMING TABLE gold.mostvaluableclient(
   -- Métricas de transações
   COUNT(*) as total_transacoes,
   SUM(gross_value) as valor_total,
+  SUM(gross_value_sinal) as valor_liquido,
   AVG(gross_value) as ticket_medio,
   MIN(data_hora) as primeira_transacao,
   MAX(data_hora) as ultima_transacao,
@@ -27,12 +28,12 @@ CREATE OR REFRESH STREAMING TABLE gold.mostvaluableclient(
   -- Receita total de taxas
   SUM(fee_revenue) as comissao_total,
   -- Ranking percentual
-  PERCENT_RANK() OVER (ORDER BY SUM(gross_value) DESC) as ranking_percentual,
+  PERCENT_RANK() OVER (ORDER BY SUM(gross_value_sinal) DESC) as ranking_percentual,
   -- Classificação
   CASE 
-    WHEN PERCENT_RANK() OVER (ORDER BY SUM(gross_value) DESC) <= 0.2 THEN 'Top 20'
-    WHEN PERCENT_RANK() OVER (ORDER BY SUM(gross_value) DESC) <= 0.5 THEN 'Top 50'
-    WHEN PERCENT_RANK() OVER (ORDER BY SUM(gross_value) DESC) >= 0.5 THEN 'Bottom 50'
+    WHEN PERCENT_RANK() OVER (ORDER BY SUM(gross_value_sinal) DESC) <= 0.2 THEN 'Top 20'
+    WHEN PERCENT_RANK() OVER (ORDER BY SUM(gross_value_sinal) DESC) <= 0.5 THEN 'Top 50'
+    WHEN PERCENT_RANK() OVER (ORDER BY SUM(gross_value_sinal) DESC) >= 0.5 THEN 'Bottom 50'
     ELSE 'Outros'
   END as classificacao_cliente,
   current_timestamp() as calculated_at
