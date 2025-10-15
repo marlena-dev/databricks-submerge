@@ -12,9 +12,9 @@ CREATE OR REFRESH STREAMING TABLE gold.mostvaluableclient(
   MIN(data_hora) AS primeira_transacao,
   MAX(data_hora) AS ultima_transacao,
 
-  -- Transações nos últimos 30 dias
+  -- Transações nos últimos 30 dias (baseado na data máxima da tabela)
   COUNT(CASE 
-    WHEN data_hora >= current_timestamp() - INTERVAL 30 DAYS THEN 1 
+    WHEN data_hora >= (SELECT MAX(data_hora) FROM lakehouse.silver.fact_transaction_revenue) - INTERVAL 30 DAYS THEN 1 
   END) AS transacoes_ultimos_30_dias,
 
   ROUND(SUM(fee_revenue), 2) AS comissao_total,

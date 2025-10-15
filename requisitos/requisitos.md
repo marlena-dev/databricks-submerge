@@ -257,7 +257,7 @@ END as gross_value_sinal
 - `ticket_medio`: AVG(gross_value) - valor médio por transação
 - `primeira_transacao`: MIN(data_hora) - primeira transação do cliente
 - `ultima_transacao`: MAX(data_hora) - última transação do cliente
-- `transacoes_ultimos_30_dias`: COUNT com filtro de 30 dias - frequência recente
+- `transacoes_ultimos_30_dias`: COUNT com filtro de 30 dias baseado na data máxima da tabela - frequência recente
 - `comissao_total`: SUM(fee_revenue) - receita total de taxas
 - `ranking_por_transacoes`: RANK() baseado no número de transações
 - `classificacao_cliente`: Classificação Top 1/2/3 ou Outros
@@ -282,6 +282,16 @@ END AS classificacao_cliente
 
 **📈 Ordenação:**
 - Resultados ordenados por `total_transacoes DESC` (maior para menor)
+
+**⏰ Lógica dos Últimos 30 Dias:**
+```sql
+COUNT(CASE 
+  WHEN data_hora >= (SELECT MAX(data_hora) FROM lakehouse.silver.fact_transaction_revenue) - INTERVAL 30 DAYS THEN 1 
+END) AS transacoes_ultimos_30_dias
+```
+- **Base**: Data máxima da tabela `fact_transaction_revenue` (não `current_timestamp()`)
+- **Vantagem**: Análise consistente baseada nos dados disponíveis
+- **Período**: 30 dias antes da última transação registrada
 
 ---
 
