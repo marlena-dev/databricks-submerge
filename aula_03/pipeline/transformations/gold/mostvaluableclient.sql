@@ -2,46 +2,36 @@
 -- Agregação por cliente: total, média, frequência, ticket médio e ranking
 
 CREATE OR REFRESH STREAMING TABLE gold.mostvaluableclient(
-  CONSTRAINT transacoes_minimas EXPECT (total_transacoes >= 1) ON VIOLATION DROP ROW,
-  CONSTRAINT valor_total_positive EXPECT (valor_total > 0) ON VIOLATION DROP ROW,
-  CONSTRAINT ticket_medio_positive EXPECT (ticket_medio > 0) ON VIOLATION DROP ROW,
-  CONSTRAINT comissao_total_positive EXPECT (comissao_total > 0) ON VIOLATION DROP ROW,
-  CONSTRAINT classificacao_valid EXPECT (classificacao_cliente IN ('Top 20', 'Top 50', 'Bottom 50', 'Outros')) ON VIOLATION DROP ROW
-) AS SELECT 
+) AS SELECT
   customer_sk,
-  c.customer_name,
-  c.segmento,
-  c.pais,
-  c.estado,
-  -- Métricas de transações
-  COUNT(*) as total_transacoes,
-  SUM(gross_value) as valor_total,
-  SUM(gross_value_sinal) as valor_liquido,
-  AVG(gross_value) as ticket_medio,
-  MIN(data_hora) as primeira_transacao,
-  MAX(data_hora) as ultima_transacao,
-  -- Frequência média últimos 30 dias
+  
+  -- Métricas principais
+  COUNT(*) AS total_transacoes,
+  ROUND(SUM(gross_value), 2) AS valor_total,
+  ROUND(AVG(gross_value), 2) AS ticket_medio,
+  MIN(data_hora) AS primeira_transacao,
+  MAX(data_hora) AS ultima_transacao,
+
+  -- Transações nos últimos 30 dias
   COUNT(CASE 
-    WHEN data_hora >= current_timestamp() - INTERVAL 30 DAYS 
-    THEN 1 
-  END) as transacoes_ultimos_30_dias,
-  -- Receita total de taxas
-  SUM(fee_revenue) as comissao_total,
-  -- Ranking percentual
-  PERCENT_RANK() OVER (ORDER BY SUM(gross_value_sinal) DESC) as ranking_percentual,
-  -- Classificação
+    WHEN data_hora >= current_timestamp() - INTERVAL 30 DAYS THEN 1 
+  END) AS transacoes_ultimos_30_dias,
+
+  ROUND(SUM(fee_revenue), 2) AS comissao_total,
+
+  -- Ranking baseado no número total de transações
+  RANK() OVER (ORDER BY COUNT(*) DESC) AS ranking_por_transacoes,
+
+  -- Classificação Top 1 / Top 2 / Top 3
   CASE 
-    WHEN PERCENT_RANK() OVER (ORDER BY SUM(gross_value_sinal) DESC) <= 0.2 THEN 'Top 20'
-    WHEN PERCENT_RANK() OVER (ORDER BY SUM(gross_value_sinal) DESC) <= 0.5 THEN 'Top 50'
-    WHEN PERCENT_RANK() OVER (ORDER BY SUM(gross_value_sinal) DESC) >= 0.5 THEN 'Bottom 50'
+    WHEN RANK() OVER (ORDER BY COUNT(*) DESC) = 1 THEN 'Top 1'
+    WHEN RANK() OVER (ORDER BY COUNT(*) DESC) = 2 THEN 'Top 2'
+    WHEN RANK() OVER (ORDER BY COUNT(*) DESC) = 3 THEN 'Top 3'
     ELSE 'Outros'
-  END as classificacao_cliente,
-  current_timestamp() as calculated_at
-FROM STREAM(silver.fact_transaction_revenue) r
-INNER JOIN STREAM(silver.dim_clientes) c ON r.customer_sk = c.customer_id
-GROUP BY 
-  customer_sk,
-  c.customer_name,
-  c.segmento,
-  c.pais,
-  c.estado
+  END AS classificacao_cliente,
+
+  current_timestamp() AS calculated_at
+
+FROM lakehouse.silver.fact_transaction_revenue
+GROUP BY customer_sk
+ORDER BY total_transacoes DESC;
