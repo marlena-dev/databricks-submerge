@@ -1,6 +1,4 @@
--- Cria tabela Silver unificando dados de vendas BTC e Commodities
--- Usando tabelas bronze geradas pelo LakeFlow do Databricks
-CREATE OR REFRESH LIVE TABLE silver_sales_normalized
+CREATE OR REFRESH STREAMING LIVE TABLE lakehouse.silver.sales_normalized
 TBLPROPERTIES ("quality" = "silver")
 AS
 SELECT
@@ -29,9 +27,8 @@ SELECT
     b.cliente_id,
     b.canal,
     b.mercado,
-    b.ingestion_ts_utc,
     'BTC' AS fonte_dados
-FROM lakehouse.bronze.sales_btc b
+FROM STREAM(lakehouse.bronze.sales_btc) b
 
 UNION ALL
 
@@ -59,7 +56,5 @@ SELECT
     c.cliente_id,
     c.canal,
     c.mercado,
-    c.ingestion_ts_utc,
     'COMMODITIES' AS fonte_dados
-FROM bronze_yfinance c
-;
+FROM STREAM(lakehouse.bronze.sales_commodities) c
