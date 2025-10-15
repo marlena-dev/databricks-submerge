@@ -7,7 +7,13 @@ CREATE OR REFRESH STREAMING TABLE silver.fact_quotation_assets(
   CONSTRAINT ativo_valid EXPECT (ativo IS NOT NULL AND ativo != '') ON VIOLATION DROP ROW,
   CONSTRAINT moeda_valid EXPECT (moeda = 'USD') ON VIOLATION DROP ROW
 ) AS SELECT 
-  ativo,
+  CASE 
+    WHEN UPPER(ativo) IN ('BTC','BTC-USD') THEN 'BTC'
+    WHEN UPPER(ativo) IN ('GOLD','GC=F')   THEN 'GOLD'
+    WHEN UPPER(ativo) IN ('OIL','CL=F')    THEN 'OIL'
+    WHEN UPPER(ativo) IN ('SILVER','SI=F') THEN 'SILVER'
+    ELSE 'UNKNOWN'
+  END    ativo,
   CAST(preco AS DECIMAL(18,4)) as preco,
   moeda,
   CAST(horario_coleta AS TIMESTAMP) as horario_coleta,

@@ -3,7 +3,6 @@
 -- Símbolo padronizado: BTC/GOLD/OIL/SILVER
 -- ===============================
 CREATE OR REFRESH STREAMING LIVE TABLE silver.fact_transaction_assets
-TBLPROPERTIES ("quality" = "silver")
 (
   CONSTRAINT quantidade_positive     EXPECT (quantidade > 0) ON VIOLATION DROP ROW,
   CONSTRAINT data_hora_not_null      EXPECT (data_hora IS NOT NULL) ON VIOLATION DROP ROW,
