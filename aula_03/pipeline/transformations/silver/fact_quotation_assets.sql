@@ -20,7 +20,7 @@ FROM (
     ativo,
     preco,
     moeda,
-    ,
+    horario_coleta,
     ingested_at
   FROM STREAM(bronze.quotation_btc)
   
