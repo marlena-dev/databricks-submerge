@@ -47,7 +47,7 @@ Todas as tabelas implementam regras de qualidade usando a sintaxe oficial `CONST
 Os dados são ingeridos dos seguintes volumes usando `cloud_files`:
 
 - `/Volumes/lakehouse/raw_public/customers` (CSV)
-- `/Volumes/lakehouse/raw_public/transaction_btc` (CSV)
+- `/Volumes/lakehouse/raw_public/transacation_btc` (CSV)
 - `/Volumes/lakehouse/raw_public/transaction_commodities` (CSV)
 - `/Volumes/lakehouse/raw_public/quotation_btc` (CSV)
 - `/Volumes/lakehouse/raw_public/quotation_yfinance` (CSV)
