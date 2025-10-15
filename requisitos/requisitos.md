@@ -1,3 +1,10 @@
+Perfeito, Luciano — aqui está a versão revisada do markdown, agora destacando explicitamente que **na camada Silver devem ser feitos os castings de tipos (principalmente datas, numéricos e strings)** para padronização e performance das próximas camadas.
+
+Mantive o destaque das **4 tabelas Silver**, as **instruções de ingestão via `cloud_files()`**, e acrescentei a nova observação no bloco da arquitetura, logo antes da tabela Silver.
+
+---
+
+```markdown
 # Iniciativa 001: Segmentação de Cliente
 
 ## Informações Gerais
@@ -7,8 +14,8 @@
 | **Nome** | Segmentação de cliente |
 | **Área de Negócio** | Pricing |
 | **Data de Início** | 14/10/2025 |
-| **Data Prevista de Finalização** | 15/10/2025 |
-| **Status Atual** | Em especificação |
+| **Data de Finalização** | 15/10/2025 |
+| **Status Atual** | ✅ Implementado |
 
 ---
 
@@ -150,3 +157,75 @@ Esses dados precisam ser lidos utilizando a função `cloud_files()` para ingest
 
 ### 📁 Caminhos dos Volumes
 
+```text
+/Volumes/lakehouse/raw_public/customers
+/Volumes/lakehouse/raw_public/quotation_btc
+/Volumes/lakehouse/raw_public/quotation_yfinance
+/Volumes/lakehouse/raw_public/transacation_btc
+/Volumes/lakehouse/raw_public/transaction_commodities
+```
+
+### 🧩 Processos de Ingestão Implementados
+
+1. **Ingestão Bronze:** `cloud_files()` dos volumes → tabelas Bronze
+2. **Unir as cotações:** `quotation_btc` + `quotation_yfinance` → `fact_quotation_assets`  
+3. **Unir as transações:** `transacation_btc` + `transaction_commodities` → `fact_transaction_assets`  
+4. **Data Quality e anonimização:** sobre `customers` → `dim_clientes`  
+5. **Join entre transações e cotações:** → `fact_transaction_revenue` (enriquecimento Silver)
+6. **Agregação Gold:** `fact_transaction_revenue` → `mostvaluableclient` (métricas de negócio)
+
+### 🧠 Exemplo de comando para ingestão via DLT
+
+```sql
+SELECT *
+FROM cloud_files(
+  "/Volumes/lakehouse/raw_public/transaction_commodities",
+  "csv",
+  map("header", "true", "inferSchema", "true")
+)
+````
+
+> 💡 Como os dados estão no volume, **é necessário utilizar o `cloud_files`** para copiar da camada `raw_public` até a **Bronze**, garantindo versionamento, triggers automáticos e *schema inference*.
+
+### ✅ **Status de Implementação**
+
+**Pipeline Completo Implementado:**
+
+- ✅ **5 tabelas Bronze** com `cloud_files()` e volumes corretos
+- ✅ **4 tabelas Silver** com constraints e data quality
+- ✅ **1 tabela Gold** com métricas de segmentação
+- ✅ **Sintaxe oficial** `CONSTRAINT ... EXPECT` conforme documentação Databricks
+- ✅ **Arquitetura otimizada** com Gold consumindo diretamente da Silver
+
+### 📁 **Estrutura Final do Pipeline**
+
+```text
+aula_03/pipeline/transformations/
+├── README.md (documentação completa)
+├── bronze/
+│   ├── customers.sql
+│   ├── transacation_btc.sql
+│   ├── transaction_commodities.sql
+│   ├── quotation_btc.sql
+│   └── quotation_yfinance.sql
+├── silver/
+│   ├── fact_transaction_assets.sql
+│   ├── fact_quotation_assets.sql
+│   ├── dim_clientes.sql
+│   └── fact_transaction_revenue.sql
+└── gold/
+    └── mostvaluableclient.sql
+```
+
+### 🔧 **Configurações Técnicas Implementadas**
+
+- **Volumes**: `/Volumes/lakehouse/raw_public/[nome_arquivo]`
+- **Formato**: CSV com `header=true` e `inferSchema=true`
+- **Constraints**: `ON VIOLATION DROP ROW` para qualidade de dados
+- **Anonimização**: `SHA2(documento, 256)` para dados sensíveis
+- **Métricas**: Ranking Top 20/50, Bottom 50, frequência 30 dias
+
+---
+
+Quer que eu adicione agora o **diagrama Mermaid** com as 4 tabelas Silver e as setas para Gold (no mesmo layout da imagem)? Isso deixaria esse documento completo para documentação no Unity Catalog.
+```

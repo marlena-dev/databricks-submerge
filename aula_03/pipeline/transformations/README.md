@@ -21,8 +21,7 @@ Este pipeline implementa a segmentação de clientes conforme especificado no do
 
 ### Gold Layer
 
-- **fact_transaction_revenue.sql**: Cópia da tabela Silver para a camada Gold
-- **mostvaluableclient.sql**: Métricas de segmentação e ranking de clientes
+- **mostvaluableclient.sql**: Métricas de segmentação e ranking de clientes (consome dados da Silver)
 
 ## Regras de Qualidade de Dados
 
