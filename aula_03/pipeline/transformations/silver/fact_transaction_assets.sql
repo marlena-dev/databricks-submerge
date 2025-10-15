@@ -8,8 +8,8 @@ CREATE OR REFRESH STREAMING TABLE silver.fact_transaction_assets(
   CONSTRAINT asset_symbol_not_null EXPECT (asset_symbol IS NOT NULL AND asset_symbol != 'UNKNOWN') ON VIOLATION DROP ROW
 ) AS SELECT 
   transaction_id,
-  data_hora,
-  date_trunc('hour', data_hora) as data_hora_aproximada,
+  CAST(data_hora AS TIMESTAMP) as data_hora,
+  date_trunc('hour', CAST(data_hora AS TIMESTAMP)) as data_hora_aproximada,
   CASE 
     WHEN ativo IS NOT NULL THEN ativo
     WHEN commodity_code IS NOT NULL THEN commodity_code

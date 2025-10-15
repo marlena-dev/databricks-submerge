@@ -10,8 +10,8 @@ CREATE OR REFRESH STREAMING TABLE silver.fact_quotation_assets(
   ativo,
   CAST(preco AS DECIMAL(18,4)) as preco,
   moeda,
-  horario_coleta,
-  date_trunc('hour', horario_coleta) as data_hora_aproximada,
+  CAST(horario_coleta AS TIMESTAMP) as horario_coleta,
+  date_trunc('hour', CAST(horario_coleta AS TIMESTAMP)) as data_hora_aproximada,
   ingested_at,
   current_timestamp() as processed_at
 FROM (
@@ -20,7 +20,7 @@ FROM (
     ativo,
     preco,
     moeda,
-    horario_coleta,
+    ,
     ingested_at
   FROM STREAM(bronze.quotation_btc)
   
