@@ -5,8 +5,8 @@ AS
 -- Lê os arquivos JSON da pasta RAW usando cloud_files (Auto Loader)
 SELECT *
 FROM cloud_files(
-  '/Volumes/lakehouse/raw_public/coinbase/coinbase/bitcoin_spot/',  -- caminho de origem
-  'json',                                                   -- formato
+  '/Volumes/lakehouse/raw_public/customers',  -- caminho de origem
+  'csv',                                                   -- formato
   map(
     -- Ingestão incremental:
     -- Se "false", o DLT vai processar apenas os novos arquivos

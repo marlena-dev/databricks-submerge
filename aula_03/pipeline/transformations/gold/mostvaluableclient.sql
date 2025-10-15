@@ -1,8 +1,13 @@
 -- Gold Layer: mostvaluableclient
 -- Agregação por cliente: total, média, frequência, ticket médio e ranking
 
-CREATE OR REFRESH MATERIALIZED VIEW gold.mostvaluableclient
-AS SELECT 
+CREATE OR REFRESH MATERIALIZED VIEW gold.mostvaluableclient(
+  CONSTRAINT transacoes_minimas EXPECT (total_transacoes >= 1) ON VIOLATION DROP ROW,
+  CONSTRAINT valor_total_positive EXPECT (valor_total > 0) ON VIOLATION DROP ROW,
+  CONSTRAINT ticket_medio_positive EXPECT (ticket_medio > 0) ON VIOLATION DROP ROW,
+  CONSTRAINT comissao_total_positive EXPECT (comissao_total > 0) ON VIOLATION DROP ROW,
+  CONSTRAINT classificacao_valid EXPECT (classificacao_cliente IN ('Top 20', 'Top 50', 'Bottom 50', 'Outros')) ON VIOLATION DROP ROW
+) AS SELECT 
   customer_sk,
   c.customer_name,
   c.segmento,
@@ -39,10 +44,3 @@ GROUP BY
   c.segmento,
   c.pais,
   c.estado
-
--- Data Quality Rules
-CONSTRAINT transacoes_minimas EXPECT (total_transacoes >= 1) ON VIOLATION DROP ROW,
-CONSTRAINT valor_total_positive EXPECT (valor_total > 0) ON VIOLATION DROP ROW,
-CONSTRAINT ticket_medio_positive EXPECT (ticket_medio > 0) ON VIOLATION DROP ROW,
-CONSTRAINT comissao_total_positive EXPECT (comissao_total > 0) ON VIOLATION DROP ROW,
-CONSTRAINT classificacao_valid EXPECT (classificacao_cliente IN ('Top 20', 'Top 50', 'Bottom 50', 'Outros')) ON VIOLATION DROP ROW

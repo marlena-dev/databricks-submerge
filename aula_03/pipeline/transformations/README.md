@@ -17,21 +17,23 @@ Este pipeline implementa a segmentação de clientes conforme especificado no do
 - **fact_transaction_assets.sql**: União de transações BTC e commodities com normalização
 - **fact_quotation_assets.sql**: União de cotações BTC e yFinance com padronização
 - **dim_clientes.sql**: Dimensão de clientes com anonimização (SHA2)
+- **fact_transaction_revenue.sql**: Junção entre transações e cotações, cálculo de valor e receita de taxa
 
 ### Gold Layer
 
-- **fact_transaction_revenue.sql**: Cálculo de receita e valor das transações
+- **fact_transaction_revenue.sql**: Cópia da tabela Silver para a camada Gold
 - **mostvaluableclient.sql**: Métricas de segmentação e ranking de clientes
 
 ## Regras de Qualidade de Dados
 
-Todas as tabelas implementam regras de qualidade usando `EXPECT` e `CONSTRAINT`:
+Todas as tabelas implementam regras de qualidade usando a sintaxe oficial `CONSTRAINT ... EXPECT` conforme [documentação do Databricks](https://docs.databricks.com/aws/en/dlt/expectations?language=SQL):
 
-- Validação de valores positivos
-- Verificação de campos obrigatórios
-- Validação de domínios permitidos
-- Anonimização de dados sensíveis
-- Consistência temporal entre transações e cotações
+- **Validação de valores positivos**: `quantidade > 0`, `preco > 0`
+- **Verificação de campos obrigatórios**: `data_hora IS NOT NULL`, `customer_id IS NOT NULL`
+- **Validação de domínios permitidos**: `tipo_operacao IN ('COMPRA','VENDA')`, `segmento IN ('Financeiro', 'Indústria', 'Varejo', 'Tecnologia')`
+- **Anonimização de dados sensíveis**: `SHA2(documento, 256)` para documentos
+- **Consistência temporal**: `horario_coleta <= current_timestamp()`
+- **Ações de violação**: `ON VIOLATION DROP ROW` para remover registros inválidos
 
 ## Configuração
 
@@ -53,6 +55,7 @@ Os dados são ingeridos dos seguintes volumes usando `cloud_files`:
 ### Configuração cloud_files
 
 Todas as tabelas Bronze utilizam a função `cloud_files` com as seguintes configurações:
+
 - **Formato**: CSV
 - **Header**: true (primeira linha contém cabeçalhos)
 - **InferSchema**: true (inferência automática de tipos de dados)

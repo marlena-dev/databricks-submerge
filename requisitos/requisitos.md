@@ -1,4 +1,3 @@
-```markdown
 # Iniciativa 001: Segmentação de Cliente
 
 ## Informações Gerais
@@ -66,14 +65,26 @@
 
 ## 4. Arquitetura e Camadas
 
-| Camada | Tabela | Descrição | Regras de Qualidade |
-|---------|---------|------------|----------------------|
-| **Bronze** | customers, transaction_btc, transaction_commodities, quotation_btc, quotation_yfinance | Dados brutos ingeridos via Erathos | Verificação de schema e nulls obrigatórios |
-| **Silver** | fact_transaction_assets | União de transações BTC e Commodities, normalização de asset_symbol e quantidade | `quantidade > 0`, `tipo_operacao` válido, `data_hora` não nula |
-| **Silver** | fact_quotation_assets | União de cotações BTC e yFinance; padronização de ativo, preço e moeda | `preco` convertido para DECIMAL, `preco > 0`, `timestamp` válido |
-| **Silver** | dim_clientes | Cópia anonimizada da base de clientes; validação de categorias | `documento` anonimizado via SHA2, `segmento/pais/estado` válidos, `customer_id` único |
-| **Gold** | fact_transaction_revenue | Junção entre transações e cotações, cálculo de valor e receita de taxa | `gross_value = quantidade × preço`, `fee_revenue = gross_value × 0.25%`, cotação válida |
-| **Gold** | mostvaluableclient | Agregação por cliente: total, média, frequência, ticket médio e ranking | `transações ≥ 1`, métricas consistentes |
+### 🪶 **Camada Silver — 4 Tabelas Principais**
+
+> ⚙️ **Observação importante:**  
+> Na **camada Silver** é o momento ideal para **fazer os *castings* de tipo** — convertendo colunas de data, números e texto para os formatos corretos (`DATE`, `TIMESTAMP`, `DECIMAL`, `STRING` etc).  
+> Isso garante **padronização**, **performance nas junções** e **qualidade dos cálculos** nas camadas Gold.
+
+| Tabela | Descrição | Regras de Qualidade |
+|---------|------------|----------------------|
+| **fact_transaction_assets** | União de transações BTC e Commodities, normalização de `asset_symbol` e `quantidade`. | `quantidade > 0`, `tipo_operacao` válido, `data_hora` não nula |
+| **fact_quotation_assets** | União de cotações BTC e yFinance; padronização de ativo, preço e moeda. | `preco` convertido para DECIMAL, `preco > 0`, `timestamp` válido |
+| **dim_clientes** | Cópia anonimizada da base de clientes; validação de categorias. | `documento` anonimizado via SHA2, `segmento/pais/estado` válidos, `customer_id` único |
+| **fact_transaction_revenue** | Junção entre transações e cotações, cálculo de valor e receita de taxa (camada Silver de enriquecimento antes da Gold). | `gross_value = quantidade × preço`, `fee_revenue = gross_value × 0.25%`, cotação válida |
+
+---
+
+### 🏆 **Camada Gold**
+
+| Tabela | Descrição | Regras de Qualidade |
+|---------|------------|----------------------|
+| **mostvaluableclient** | Agregação por cliente: total, média, frequência, ticket médio e ranking. | `transações ≥ 1`, métricas consistentes |
 
 ---
 
@@ -129,21 +140,13 @@
 | **Acesso a dados sensíveis** | Row Level Security (RLS) | Implementado via Lakeflow / Databricks SQL |
 | **Governança** | Unity Catalog | Grants por camada: leitura apenas na Gold |
 | **Auditoria e Linhagem** | Lakeflow Lineage | Rastreabilidade completa dos fluxos |
-```
+
+---
 
 ## 7. Volumes do CSV
 
-Eles vão iniciar o processo e serão por onde o DLT irá copiar do RAW para a camada Bronze.
+Os arquivos **Bronze** foram montados no catálogo `lakehouse` como **volumes**, e servirão como origem para o **DLT copiar do RAW para a camada Bronze**.  
+Esses dados precisam ser lidos utilizando a função `cloud_files()` para ingestão incremental.
 
-Eles estão no:
+### 📁 Caminhos dos Volumes
 
-lakehouse.raw_public/customers
-lakehouse.raw_public/quotation_btc
-lakehouse.raw_public/quotation_yfinance
-lakehouse.raw_public/transaction_btc
-lakehouse.raw_public/transaction_commodities
-
-
-Foram montados no catalogo lakehouse como volumes.
-
-Como os dados estão no volume, é necessario utilizar o cloud_files para copiar para a camada raw_public até bronze
