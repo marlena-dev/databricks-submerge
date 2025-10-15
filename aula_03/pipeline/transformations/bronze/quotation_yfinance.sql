@@ -9,7 +9,7 @@ AS SELECT
   horario_coleta,
   current_timestamp() as ingested_at
 FROM cloud_files(
-  "lakehouse.raw_public/quotation_yfinance",
+  "/Volumes/lakehouse/raw_public/quotation_yfinance",
   "csv",
   map("header", "true", "inferSchema", "true")
 )

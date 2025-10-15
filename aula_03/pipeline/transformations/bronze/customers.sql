@@ -13,7 +13,7 @@ AS SELECT
   created_at,
   current_timestamp() as ingested_at
 FROM cloud_files(
-  "lakehouse.raw_public/customers",
+  "/Volumes/lakehouse/raw_public/customers",
   "csv",
   map("header", "true", "inferSchema", "true")
 )
