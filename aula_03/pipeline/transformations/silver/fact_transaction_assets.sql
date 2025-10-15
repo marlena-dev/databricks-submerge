@@ -40,7 +40,7 @@ FROM (
     arquivo_origem,
     importado_em,
     ingested_at
-  FROM bronze.transaction_btc
+  FROM STREAM(bronze.transaction_btc)
   
   UNION ALL
   
@@ -59,5 +59,5 @@ FROM (
     arquivo_origem,
     importado_em,
     ingested_at
-  FROM bronze.transaction_commodities
+  FROM STREAM(bronze.transaction_commodities)
 ) combined_transactions

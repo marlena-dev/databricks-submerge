@@ -196,6 +196,7 @@ FROM cloud_files(
 - ✅ **1 tabela Gold** com métricas de segmentação
 - ✅ **Sintaxe oficial** `CONSTRAINT ... EXPECT` conforme documentação Databricks
 - ✅ **Arquitetura otimizada** com Gold consumindo diretamente da Silver
+- ✅ **Streaming incremental** com `STREAM()` para evitar erros de batch query
 
 ### 📁 **Estrutura Final do Pipeline**
 
@@ -224,6 +225,7 @@ aula_03/pipeline/transformations/
 - **Constraints**: `ON VIOLATION DROP ROW` para qualidade de dados
 - **Anonimização**: `SHA2(documento, 256)` para dados sensíveis
 - **Métricas**: Ranking Top 20/50, Bottom 50, frequência 30 dias
+- **Streaming**: `STREAM()` em todas as tabelas Silver/Gold para processamento incremental
 
 ---
 

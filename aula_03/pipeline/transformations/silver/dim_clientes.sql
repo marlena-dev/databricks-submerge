@@ -22,4 +22,4 @@ CREATE OR REFRESH STREAMING TABLE silver.dim_clientes(
   created_at,
   ingested_at,
   current_timestamp() as processed_at
-FROM bronze.customers
+FROM STREAM(bronze.customers)

@@ -36,8 +36,8 @@ CREATE OR REFRESH MATERIALIZED VIEW gold.mostvaluableclient(
     ELSE 'Outros'
   END as classificacao_cliente,
   current_timestamp() as calculated_at
-FROM silver.fact_transaction_revenue r
-INNER JOIN silver.dim_clientes c ON r.customer_sk = c.customer_id
+FROM STREAM(silver.fact_transaction_revenue) r
+INNER JOIN STREAM(silver.dim_clientes) c ON r.customer_sk = c.customer_id
 GROUP BY 
   customer_sk,
   c.customer_name,

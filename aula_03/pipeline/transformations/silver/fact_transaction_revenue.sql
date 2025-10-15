@@ -25,8 +25,8 @@ CREATE OR REFRESH STREAMING TABLE silver.fact_transaction_revenue(
   (t.quantidade * q.preco * 0.0025) as fee_revenue,
   t.processed_at,
   current_timestamp() as calculated_at
-FROM silver.fact_transaction_assets t
-INNER JOIN silver.dim_clientes c ON t.cliente_id = c.customer_id
+FROM STREAM(silver.fact_transaction_assets) t
+INNER JOIN STREAM(silver.dim_clientes) c ON t.cliente_id = c.customer_id
 INNER JOIN (
   -- Subquery para obter a cotação mais recente antes da transação
   SELECT 
@@ -37,7 +37,7 @@ INNER JOIN (
       PARTITION BY ativo, DATE(horario_coleta) 
       ORDER BY horario_coleta DESC
     ) as rn
-  FROM silver.fact_quotation_assets
+  FROM STREAM(silver.fact_quotation_assets)
 ) q ON t.asset_symbol = q.ativo 
   AND q.rn = 1
   AND q.horario_coleta <= t.data_hora

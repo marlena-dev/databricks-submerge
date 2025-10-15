@@ -34,6 +34,15 @@ Todas as tabelas implementam regras de qualidade usando a sintaxe oficial `CONST
 - **Consistência temporal**: `horario_coleta <= current_timestamp()`
 - **Ações de violação**: `ON VIOLATION DROP ROW` para remover registros inválidos
 
+## Streaming e Incremental Processing
+
+Todas as tabelas Silver e Gold utilizam `STREAM()` para garantir processamento incremental:
+
+- **Bronze → Silver**: `FROM STREAM(bronze.tabela)`
+- **Silver → Gold**: `FROM STREAM(silver.tabela)`
+- **Evita erro**: "Cannot create a streaming table append once flow from a batch query"
+- **Garante**: Ingestão incremental e comportamento correto do pipeline
+
 ## Configuração
 
 - **Frequência**: Execução a cada 1 hora (H+00)

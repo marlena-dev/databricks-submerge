@@ -21,7 +21,7 @@ FROM (
     moeda,
     horario_coleta,
     ingested_at
-  FROM bronze.quotation_btc
+  FROM STREAM(bronze.quotation_btc)
   
   UNION ALL
   
@@ -32,5 +32,5 @@ FROM (
     moeda,
     horario_coleta,
     ingested_at
-  FROM bronze.quotation_yfinance
+  FROM STREAM(bronze.quotation_yfinance)
 ) combined_quotations
